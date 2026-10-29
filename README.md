@@ -136,7 +136,13 @@ npm run dev
 
 ### 4. Dữ liệu hạng thành viên
 
-Backend tự khởi tạo dữ liệu ranks khi kết nối MongoDB lần đầu (`autoInitializeRanks()` trong `src/ranks/rank.init.js`) — **không cần chạy script riêng**.
+Backend tự khởi tạo dữ liệu ranks khi kết nối MongoDB lần đầu (`autoInitializeRanks()` trong `src/ranks/rank.init.js`) — **không bắt buộc chạy script**. Nếu muốn chạy thủ công:
+
+```bash
+cd backend
+npm run init-ranks          # chỉ tạo khi DB chưa có rank
+npm run init-ranks:force    # xóa rank cũ rồi tạo lại
+```
 
 ### 5. Tạo tài khoản admin (lần đầu)
 
