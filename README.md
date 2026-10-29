@@ -43,7 +43,7 @@
 ## 📁 Cấu trúc thư mục
 
 ```
-book_store_project/
+book_store/
 ├── frontend/               # React + Vite app
 │   ├── src/
 │   │   ├── components/     # Shared components
@@ -82,8 +82,8 @@ book_store_project/
 ### 1. Clone repo
 
 ```bash
-git clone <repo-url>
-cd book_store_project
+git clone https://github.com/son21094/book_store.git
+cd book_store
 ```
 
 ### 2. Cài đặt backend
@@ -93,11 +93,11 @@ cd backend
 npm install
 ```
 
-Tạo file `.env` trong thư mục `backend/`:
+Tạo file `.env` trong thư mục `backend/` (xem mẫu ở `backend/.env.example`):
 
 ```env
-MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/bookstore
-JWT_SECRET_KEY=your_jwt_secret
+DB_URL=mongodb+srv://<user>:<pass>@cluster.mongodb.net/bookstore?retryWrites=true&w=majority
+JWT_SECRET_KEY=your_super_secret_jwt_key_generate_a_random_one
 PORT=5000
 FRONTEND_URL=http://localhost:5173
 ```
@@ -116,16 +116,16 @@ cd frontend
 npm install
 ```
 
-Tạo file `.env` trong thư mục `frontend/`:
+Tạo file `.env` trong thư mục `frontend/` (xem mẫu ở `frontend/.env.example`):
 
 ```env
-VITE_API_KEY=your_firebase_api_key
-VITE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_PROJECT_ID=your_project_id
-VITE_STORAGE_BUCKET=your_project.appspot.com
-VITE_MESSAGING_SENDER_ID=your_sender_id
-VITE_APP_ID=your_app_id
-VITE_BASE_URL=http://localhost:5000
+VITE_API_URL=http://localhost:5000
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
 ```
 
 Khởi động frontend:
@@ -134,19 +134,13 @@ Khởi động frontend:
 npm run dev
 ```
 
-### 4. Khởi tạo dữ liệu ranks (lần đầu)
+### 4. Dữ liệu hạng thành viên
 
-```bash
-cd backend
-npm run init-ranks
-```
+Backend tự khởi tạo dữ liệu ranks khi kết nối MongoDB lần đầu (`autoInitializeRanks()` trong `src/ranks/rank.init.js`) — **không cần chạy script riêng**.
 
 ### 5. Tạo tài khoản admin (lần đầu)
 
-```bash
-cd backend
-node createAdmin.js
-```
+Đăng ký một tài khoản bình thường qua app, sau đó vào MongoDB đổi `role` của user đó thành `"admin"`. Từ đó có thể đăng nhập tại `/api/auth/admin` và tạo thêm admin khác qua `POST /api/auth/create-admin` (yêu cầu token admin).
 
 ---
 
@@ -167,10 +161,15 @@ node createAdmin.js
 
 ## 📦 Deploy lên Vercel
 
-Xem hướng dẫn chi tiết tại [`VERCEL_DEPLOYMENT.md`](./VERCEL_DEPLOYMENT.md).
+Dự án đã có sẵn `vercel.json` ở cả thư mục gốc, `backend/` và `frontend/`, nên có thể import trực tiếp repo vào Vercel:
+
+1. Tạo 2 project Vercel: một cho `frontend` (Vite) và một cho `backend` (serverless function).
+2. Khai báo biến môi trường trên Vercel giống với 2 file `.env` ở phần cài đặt bên trên.
+3. Trỏ `VITE_API_URL` của frontend về domain backend, và `FRONTEND_URL` của backend về domain frontend (để CORS hoạt động).
 
 ---
 
 ## 🔑 Đăng nhập Admin
 
-Xem hướng dẫn tại [`ADMIN_LOGIN_GUIDE.md`](./ADMIN_LOGIN_GUIDE.md).
+- Trang đăng nhập admin nằm ở `frontend/src/components/AdminLogin.jsx`, gọi API `POST /api/auth/admin`.
+- Tài khoản phải có `role: "admin"` trong collection `users` (xem bước 5 ở phần cài đặt).
